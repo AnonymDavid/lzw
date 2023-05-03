@@ -8,6 +8,11 @@ class FIELD():
     char : str
     series : str
 
+@dataclass
+class ENCODED():
+    dictionary : List[str]
+    code : List[int]
+
 def getDict(dict:List[str]) -> List[FIELD]:
     dictionary = []
     help_list = []
@@ -46,16 +51,39 @@ def encodeFull(text:str) -> List[FIELD]:
 
     return dictionary
 
-def encode(text:str) -> tuple[List[tuple[int, str]], List[int]]:
+def encode(text:str) -> ENCODED:
     encoded:List[FIELD] = encodeFull(text)
     dictionary = []
     code = []
     i = 1
     while encoded[i].n == 0:
-        dictionary.append((encoded[i].m, encoded[i].char))
+        dictionary.append(encoded[i].char)
         i += 1
     while i < len(encoded):
         code.append(encoded[i].n)
         i += 1
     
-    return dictionary, code
+    return ENCODED(dictionary, code)
+
+def decode(encoded:ENCODED) -> str:
+    dictionary:List[FIELD] = getDict(encoded.dictionary)
+
+    mu = dictionary[-1].m + 1
+    n = encoded.code[0]
+    dictionary.append(FIELD(mu, n, '', dictionary[n].char))
+
+    text = dictionary[n].char
+    for i in range(1, len(encoded.code)):
+        n = encoded.code[i]
+        mu += 1
+        j = n
+        while dictionary[j].n != 0:
+            j = dictionary[j].n
+        
+        dictionary.append(FIELD(mu, n, '', dictionary[n].series))
+        dictionary[mu-1].char = dictionary[j].char
+        dictionary[mu-1].series = f'{dictionary[mu-1].series}{dictionary[j].char}'
+
+        text += dictionary[n].series
+
+    return text
