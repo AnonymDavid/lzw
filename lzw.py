@@ -17,9 +17,11 @@ def getDict(dict:List[str]) -> List[FIELD]:
     dictionary = []
     help_list = []
     dictionary.append(FIELD(0, 0, '', ''))
+    c = 1
     for i in range(len(dict)):
         if dict[i] not in help_list:
-            dictionary.append(FIELD(i+1, 0, dict[i], dict[i]))
+            dictionary.append(FIELD(c, 0, dict[i], dict[i]))
+            c += 1
             help_list.append(dict[i])
     
     return dictionary
