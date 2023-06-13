@@ -48,7 +48,7 @@ def encodeFull(text:str) -> List[FIELD]:
             dictionary.append(FIELD(mu+1, nm, c, f'{dictionary[nm].series}{c}'))
             nm = findFirstChar(dictionary, c)
             mu += 1
-        
+
     dictionary.append(FIELD(mu+1, nm, '', ''))
 
     return dictionary
@@ -61,6 +61,7 @@ def encode(text:str) -> ENCODED:
     while encoded[i].n == 0:
         dictionary.append(encoded[i].char)
         i += 1
+
     while i < len(encoded):
         code.append(encoded[i].n)
         i += 1
@@ -82,9 +83,10 @@ def decode(encoded:ENCODED) -> str:
         while dictionary[j].n != 0:
             j = dictionary[j].n
         
-        dictionary.append(FIELD(mu, n, '', dictionary[n].series))
+        dictionary.append(FIELD(mu, n, '', ''))
         dictionary[mu-1].char = dictionary[j].char
         dictionary[mu-1].series = f'{dictionary[mu-1].series}{dictionary[j].char}'
+        dictionary[mu].series = dictionary[n].series
 
         text += dictionary[n].series
 
