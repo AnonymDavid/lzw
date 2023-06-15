@@ -49,33 +49,36 @@ def encodeFull(text:str) -> List[FIELD]:
             nm = findFirstChar(dictionary, c)
             mu += 1
 
-    dictionary.append(FIELD(mu+1, nm, '', ''))
+    dictionary.append(FIELD(mu+1, nm, dictionary[nm].char, dictionary[nm].series))
 
     return dictionary
 
-def encode(text:str) -> ENCODED:
-    encoded:List[FIELD] = encodeFull(text)
+def encodeTable(table:List[FIELD]) -> ENCODED:
     dictionary = []
     code = []
     i = 1
-    while encoded[i].n == 0:
-        dictionary.append(encoded[i].char)
+    while table[i].n == 0:
+        dictionary.append(table[i].char)
         i += 1
 
-    while i < len(encoded):
-        code.append(encoded[i].n)
+    while i < len(table):
+        code.append(table[i].n)
         i += 1
     
     return ENCODED(dictionary, code)
 
-def decode(encoded:ENCODED) -> str:
+def encode(text:str) -> ENCODED:
+    encoded:List[FIELD] = encodeFull(text)
+    
+    return encodeTable(encoded)
+
+def decodeFull(encoded:ENCODED) -> List[FIELD]:
     dictionary:List[FIELD] = getDict(encoded.dictionary)
 
     mu = dictionary[-1].m + 1
     n = encoded.code[0]
     dictionary.append(FIELD(mu, n, '', dictionary[n].char))
 
-    text = dictionary[n].char
     for i in range(1, len(encoded.code)):
         n = encoded.code[i]
         mu += 1
@@ -87,7 +90,21 @@ def decode(encoded:ENCODED) -> str:
         dictionary[mu-1].char = dictionary[j].char
         dictionary[mu-1].series = f'{dictionary[mu-1].series}{dictionary[j].char}'
         dictionary[mu].series = dictionary[n].series
+    
+    dictionary[mu].char = dictionary[dictionary[mu].n].series[-1]
 
-        text += dictionary[n].series
+    return dictionary
 
+def decodeTable(table:List[FIELD]) -> str:
+    text = ""
+    for x in table:
+        text += x.series[:-1]
+    
+    text += table[-1].series[-1]
+    
     return text
+
+def decode(encoded:ENCODED) -> str:
+    dictionary = decodeFull(encoded)
+
+    return decodeTable(dictionary)
