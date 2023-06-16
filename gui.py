@@ -40,6 +40,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txtDictionary.setText("".join([s for s in result.dictionary]))
         self.txtCode.setText("".join([f'{str(s)}, ' for s in result.code])[:-2])
 
+        self.txtCompression.setText(f'{round(((len(table) - 1) / len(text)) * 100, 2)} %')
+
 
     def btnDecode_clicked(self) -> None:
         dictionary = self.txtDictionary.toPlainText()
@@ -55,7 +57,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.refreshTable(table)
 
-        self.txtText.setText(decodeTable(table))
+        text = decodeTable(table)
+
+        self.txtText.setText(text)
+
+        self.txtCompression.setText(f'{round(((len(table) - 1) / len(text)) * 100, 2)} %')
 
 
 def main():
